@@ -10,3 +10,30 @@
 .DS_Store
 
 npm-debug.log*
+
+
+# Logs
+logs
+*.log
+yarn-debug.log*
+yarn-error.log*
+# Eslint cache
+.eslintcache
+
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+# Local environment variables
+.env
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.project
+.settings
+*.zip
