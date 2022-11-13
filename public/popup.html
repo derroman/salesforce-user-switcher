@@ -1,32 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Chrome Extension</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <div class="app">
-      <p class="counter-label">Counter</p>
-      <div id="counter" class="counter"></div>
-      <div class="button-container">
-        <button id="decrementBtn" class="button">-</button>
-        <button id="incrementBtn" class="button">+</button>
+<head>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet"
+        href="/assets/styles/salesforce-lightning-design-system.css">
+  <style type="text/css">
+    body {
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+
+    .slds-card__header {
+      background-color: rgb(243, 242, 242) !important;
+      padding: 1rem !important;
+    }
+
+    .slds-card__body {
+      width: 600px !important;
+    }
+
+    .slds-card__footer {
+      background-color: rgb(243, 242, 242) !important;
+      padding: 1rem !important;
+    }
+  </style>
+</head>
+<body>
+<div class='quote-list-card' >
+  <article class='slds-card' >
+    <div class='slds-card__header slds-card__header_bg'>
+      <div class='slds-grid'>
+        <header class='slds-media slds-media_center slds-has-flexi-truncate'>
+          <div class='slds-media__body' id="headerBodyDiv">
+            <h2 class='slds-card__header-title' id="header">
+              Users are loading or this is not a Salesforce Lighting Page
+            </h2>
+          </div>
+        </header>
+      </div>
+    </div>
+    <div class='slds-card__body slds-card__body_inner'  style="overflow-y: auto; max-height: 380px;">
+
+<!--      Search input -->
+      <div class="slds-form-element" id="searchDiv" style="display: none;">
+        <label class="slds-form-element__label" for="text-input-id-47">Filter search results</label>
+        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+          <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+            <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#search"></use>
+          </svg>
+          <input type="text" id="text-input-id-47" placeholder="Search for a user, profile or role name" class="slds-input" />
+        </div>
+        <hr/>
       </div>
 
-      <hr class="divider" />
+<!--      Search input end-->
 
-      <p class="title">Chrome Extension is Ready!</p>
-      <p class="subtitle">Start by updating <code>popup.html</code></p>
+      <fieldset class="slds-form-element">
+
+        <div class="slds-form-element__control" id="formDiv">
+        </div>
+      </fieldset>
+      <form id="languageForm">
+      </form>
     </div>
+    <footer class='slds-card__footer' id="footer" style="font-size: 0.9em;">
 
-    <script src="popup.js"></script>
-
-    <!--
-      This HTML file opens when you click on icon from the toolbar.
-
-      To begin the development, run `npm run watch`.
-      To create a production bundle, use `npm run build`.
-    -->
-  </body>
+    </footer>
+  </article>
+</div>
+<script src="popup.js"></script>
+</body>
 </html>

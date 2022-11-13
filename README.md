@@ -19,3 +19,4 @@ Suggestions and pull requests are welcomed!.
 
 This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
 
+Icon source: <a href="https://www.flaticon.com/free-icons/switch" title="switch icons">Switch icons created by Darius Dan - Flaticon</a>
