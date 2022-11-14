@@ -27,42 +27,48 @@
   </style>
 </head>
 <body>
-<div class='quote-list-card' >
-  <article class='slds-card' >
+<div class='quote-list-card'>
+  <article class='slds-card'>
     <div class='slds-card__header slds-card__header_bg'>
       <div class='slds-grid'>
         <header class='slds-media slds-media_center slds-has-flexi-truncate'>
           <div class='slds-media__body' id="headerBodyDiv">
             <h2 class='slds-card__header-title' id="header">
-              Users are loading or this is not a Salesforce Lighting Page
+              Salesforce User Switcher
             </h2>
           </div>
         </header>
       </div>
     </div>
-    <div class='slds-card__body slds-card__body_inner'  style="overflow-y: auto; max-height: 380px;">
+    <div class='slds-card__body slds-card__body_inner'
+         style="overflow-y: hidden; max-height: 380px;">
 
-<!--      Search input -->
+      <!--      Search input -->
       <div class="slds-form-element" id="searchDiv" style="display: none;">
-        <label class="slds-form-element__label" for="text-input-id-47">Filter search results</label>
-        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
-          <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
-            <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#search"></use>
+        <label class="slds-form-element__label" for="text-input-id-47">Filter
+          search results</label>
+        <div
+          class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+          <svg
+            class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default"
+            aria-hidden="true">
+            <use
+              xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#search"></use>
           </svg>
-          <input type="text" id="text-input-id-47" placeholder="Search for a user, profile or role name" class="slds-input" />
+          <input type="text" id="text-input-id-47"
+                 placeholder="Search for a user, profile or role name"
+                 class="slds-input"/>
         </div>
         <hr/>
       </div>
 
-<!--      Search input end-->
+      <!--      Search input end-->
 
-      <fieldset class="slds-form-element">
+      <fieldset class="slds-form-element" style="overflow: auto;">
 
-        <div class="slds-form-element__control" id="formDiv">
+        <div class="slds-form-element__control" id="formDiv" style="overflow: auto; height: 250px;">
         </div>
       </fieldset>
-      <form id="languageForm">
-      </form>
     </div>
     <footer class='slds-card__footer' id="footer" style="font-size: 0.9em;">
 

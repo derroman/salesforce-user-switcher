@@ -4,6 +4,8 @@ let currentUrl;
 let organizationId;
 let searchResultList;
 let filteredList;
+let currentUserId;
+let currentTab;
 // queries the currently active tab of the current active window
 chrome.tabs.query(activeTabQuery, tabQueryCallback);
 
@@ -17,51 +19,101 @@ function updateValue(evt) {
 
 function tabQueryCallback(tabs) {
 
-  let currentTab = tabs[0]; // there will be only one in this array
-  if(!currentTab){
-    createErrorMessage('Something weird happened','Potential causes:<br/><ul class="slds-list_dotted"><li>This is no Salesforce org</li><li>You are not a System Administrator</li><li>You are not allowed to switch users</li></ul>');
+  currentTab = tabs[0]; // there will be only one in this array
+  if (!currentTab) {
+    handleError(null);
+
   }
   currentUrl = currentTab.url;
-  if(!currentUrl){
-    createErrorMessage('Something weird happened','Potential causes:<br/><ul class="slds-list_dotted"><li>This is no Salesforce org</li><li>You are not a System Administrator</li><li>You are not allowed to switch users</li></ul>');
+  if (!currentUrl) {
+    handleError(null);
   }
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(
-      {
-        type: 'QUERY_ORGANIZATION_ID',
-        payload: {
-          message: {
-            currentUrl: currentTab.url
-          }
-        },
-      },
-      response => {
-        if (!response || response && response[0] && response[0].errorCode) {
-          createErrorMessage('Something weird happened','Potential causes:<br/><ul class="slds-list_dotted"><li>This is no Salesforce org</li><li>You are not a System Administrator</li><li>You are not allowed to switch users</li></ul>');
-          return;
-        }
-        organizationId = response.records[0].Id;
 
-        chrome.runtime.sendMessage(
-          {
-            type: 'QUERY_USERS',
-            payload: {
-              message: {
-                currentUrl: currentTab.url
-              }
-            },
-          },
-          response => {
-            // console.log(JSON.stringify(response, null, 1));
-            if (!response) {
-              return;
-            }
-            searchResultList = response;
-            filteredList = response;
-            createRadioButtons(response);
-          });
-      });
+    chrome.runtime.sendMessage({
+      type: 'QUERY_USER_ID',
+      payload: {
+        message: {
+          currentUrl: currentTab.url
+        }
+      }
+    }).then(queryCanUserLogin, handleError);
   });
+}
+
+function queryCanUserLogin(response) {
+  currentUserId = response;
+  chrome.runtime.sendMessage(
+    {
+      type: 'QUERY_CAN_USER_LOGIN',
+      payload: {
+        message: {
+          currentTab: currentTab,
+          currentUrl: currentUrl
+        }
+      },
+    }).then(queryOrganizationId, handleError);
+}
+
+function queryOrganizationId(response) {
+
+  if(!response){
+    handleLoginNotPossibleError();
+    return;
+  }
+  chrome.runtime.sendMessage(
+    {
+      type: 'QUERY_ORGANIZATION_ID',
+      payload: {
+        message: {
+          currentUrl: currentUrl
+        }
+      },
+    }).then(queryUsers, handleError);
+}
+
+function queryUsers(response) {
+
+  if (!response || response && response[0] && response[0].errorCode) {
+    handleError(null);
+    return;
+  }
+  organizationId = response.records[0].Id;
+
+  chrome.runtime.sendMessage(
+    {
+      type: 'QUERY_USERS',
+      payload: {
+        message: {
+          currentUrl: currentUrl
+        }
+      },
+    }).then(handleQueryUsersResponse, handleError);
+
+}
+
+function handleQueryUsersResponse(response) {
+  if (!response) {
+    handleError(null);
+    return;
+  }
+  let cleanedResponse = response.filter(function (result) {
+    return result.Id !== currentUserId;
+  })
+  searchResultList = cleanedResponse;
+  filteredList = cleanedResponse;
+  createRadioButtons(cleanedResponse);
+}
+
+function handleError(error) {
+  if(error){
+    console.error(error);
+  }
+  createErrorMessage('Something weird happened', 'Potential causes:<br/><ul class="slds-list_dotted"><li>This is no Salesforce org</li><li>You are not a System Administrator</li><li>You are not allowed to switch users</li></ul>');
+}
+
+function handleLoginNotPossibleError(){
+  createErrorMessage('You are already logged in as another user', 'Please log out first.');
 }
 
 function loginAsUser(userId) {
@@ -96,7 +148,7 @@ function createErrorMessage(message, submessage) {
   headline.className = 'slds-text-heading_small';
   headline.innerHTML = message;
 
-  if(submessage){
+  if (submessage) {
     let subMessageP = document.createElement('p');
     contentDiv.appendChild(subMessageP);
     subMessageP.innerHTML = submessage;
@@ -116,8 +168,8 @@ function createRadioButtons(values) {
   document.getElementById("formDiv").innerHTML = '';
 
   document.getElementById('searchDiv').style.display = 'block';
-  document.getElementById('header').innerHTML = 'Please select a user';
-  document.getElementById('footer').innerHTML = values.length + ' active users found';
+  // document.getElementById('header').innerHTML = 'Please select a user';
+  document.getElementById('footer').innerHTML = values.length === 1 ? values.length + ' active user found' : values.length + ' active users found';
   values.forEach((value, i) => {
 
     let outerspan = document.createElement('span');
@@ -141,7 +193,11 @@ function createRadioButtons(values) {
 
     let labelSpan = document.createElement('span');
     labelSpan.className = 'slds-form-element__label';
-    let innerValue = value.LastName + ', ' + value.FirstName;
+    let innerValue = value.LastName;
+    if (value.FirstName) {
+      innerValue += ', ' + value.FirstName;
+    }
+
 
     innerValue += ' (';
     if (value.Profile && value.Profile.Name) {

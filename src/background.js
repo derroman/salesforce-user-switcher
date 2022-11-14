@@ -15,34 +15,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse(null);
     return;
   }
+  console.log(request.type);
   (async () => {
     let apiHost, headers;
     [apiHost, headers] = await getAPIHostAndHeaders(request.payload.message.currentUrl);
-    if (request.type === 'QUERY_ORGANIZATION_ID') {
+    if (request.type === 'QUERY_USER_ID') {
+      getUserInfo(apiHost, headers).then(res => {
+        sendResponse(res);
+      })
+    } else if (request.type === 'QUERY_CAN_USER_LOGIN') {
+      checkIfUserCanLoginAsAnotherUser(apiHost, headers, request.payload.message.currentTab).then(res => {
+        sendResponse(res);
+      })
+    } else if (request.type === 'QUERY_ORGANIZATION_ID') {
       getOrgId(apiHost, headers).then(res => {
-        console.log('ORG ID: ' + JSON.stringify(res));
         sendResponse(res);
       });
-    }
-    if (request.type === 'QUERY_USERS') {
-      checkIfUserCanLoginAsAnotherUser(apiHost, headers).then(res => {
-        if (res) {
-
-          queryActiveUsers(apiHost, headers).then(res => {
-            sendResponse(res);
-          });
-
-
-        } else {
-          //Todo handle error
-          console.log('User not allowed to switch to another user');
-        }
+    } else if (request.type === 'QUERY_USERS') {
+      queryActiveUsers(apiHost, headers).then(res => {
+        sendResponse(res);
       });
     }
 
   })();
   return true;// keep the messaging channel open for sendResponse
 });
+
+async function getUserInfo(apiHost, headers) {
+  return await fetch(apiHost + '/services/data/v50.0/chatter/users/me', {headers: headers}).then(toJson).then(async data => {
+    return data.id;
+  });
+}
 
 async function getOrgId(apiHost, headers) {
   return await fetch(apiHost + '/services/data/v56.0/query/?q=SELECT+Id+FROM+Organization', {headers: headers}).then(toJson).then(async data => {
@@ -61,22 +64,15 @@ async function queryActiveUsers(apiHost, headers) {
   });
 }
 
-async function checkIfUserCanLoginAsAnotherUser(apiHost, headers) {
-  //todo check if user is actually allowed to login as another user
-  /**
-   * SELECT Id, PermissionSet.PermissionsModifyAllData
-   * FROM PermissionSetAssignment
-   * WHERE PermissionSet.PermissionsModifyAllData = TRUE
-   *
-   *
-   * SELECT Id,
-   *         Name
-   * FROM Profile
-   * WHERE PermissionsModifyAllData = TRUE
-   */
-  return true;
+function checkIfUserCanLoginAsAnotherUser(apiHost, headers, currentTab) {
 
-
+  return new Promise((resolve, reject) => {
+    chrome.tabs.sendMessage(currentTab.id, {text: 'CHECK_FOR_LOGOUT_LINK'}, response => {
+      resolve(response);
+    });
+  }).then(response => {
+    return response;
+  });
 }
 
 async function getAPIHostAndHeaders(currentUrl) {
