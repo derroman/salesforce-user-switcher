@@ -28,7 +28,7 @@ function tabQueryCallback(tabs) {
   if (!currentUrl) {
     handleError(null);
   }
-  return new Promise((resolve, reject) => {
+  return new Promise(() => {
 
     chrome.runtime.sendMessage({
       type: 'QUERY_USER_ID',
@@ -42,6 +42,7 @@ function tabQueryCallback(tabs) {
 }
 
 function queryCanUserLogin(response) {
+
   currentUserId = response;
   chrome.runtime.sendMessage(
     {
@@ -59,6 +60,10 @@ function queryOrganizationId(response) {
 
   if(!response){
     handleLoginNotPossibleError();
+    return;
+  }
+  if(response==='not possible'){
+    createErrorMessage('This is not a Salesforce Lightning Page');
     return;
   }
   chrome.runtime.sendMessage(
@@ -113,7 +118,7 @@ function handleError(error) {
 }
 
 function handleLoginNotPossibleError(){
-  createErrorMessage('You are already logged in as another user', 'Please log out first.');
+  createErrorMessage('You are already logged in as another user', 'Please log out first!');
 }
 
 function loginAsUser(userId) {
@@ -153,8 +158,8 @@ function createErrorMessage(message, submessage) {
     contentDiv.appendChild(subMessageP);
     subMessageP.innerHTML = submessage;
   }
-
-  document.getElementById('headerBodyDiv').innerHTML = '';
+  hideSpinner();
+  // document.getElementById('headerBodyDiv').innerHTML = '';
   document.getElementById('formDiv').appendChild(outDiv);
 
 
@@ -162,7 +167,6 @@ function createErrorMessage(message, submessage) {
 
 function createRadioButtons(values) {
   if (!values) {
-    console.log('Not a SF page');
     return;
   }
   document.getElementById("formDiv").innerHTML = '';
@@ -170,7 +174,7 @@ function createRadioButtons(values) {
   document.getElementById('searchDiv').style.display = 'block';
   // document.getElementById('header').innerHTML = 'Please select a user';
   document.getElementById('footer').innerHTML = values.length === 1 ? values.length + ' active user found' : values.length + ' active users found';
-  values.forEach((value, i) => {
+  values.forEach((value) => {
 
     let outerspan = document.createElement('span');
     outerspan.className = 'slds-radio';
@@ -209,12 +213,13 @@ function createRadioButtons(values) {
     }
     innerValue += ')';
     labelSpan.innerHTML = innerValue;
-    document.getElementById("formDiv").appendChild(outerspan);
+    document.getElementById('formDiv').appendChild(outerspan);
     document.getElementById('outerspan-' + value.Id).appendChild(radioInput);
     document.getElementById('outerspan-' + value.Id).appendChild(label);
     document.getElementById('label-' + value.Id).appendChild(dividerSpan);
     document.getElementById('label-' + value.Id).appendChild(labelSpan);
   });
+  hideSpinner();
 }
 
 function filterSearchResults(queryString) {
@@ -233,4 +238,8 @@ function filterSearchResults(queryString) {
   });
   console.log(JSON.stringify(filteredList, null, 1));
   createRadioButtons(filteredList);
+}
+
+function hideSpinner(){
+  document.getElementById('loading-spinner').style.display = 'none';
 }

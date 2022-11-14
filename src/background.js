@@ -12,7 +12,7 @@ async function toJson(response) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (!request.payload || !request.payload.message || !request.payload.message.currentUrl || !request.payload.message.currentUrl.includes(salesforceUrlPattern)) {
-    sendResponse(null);
+    sendResponse('not possible');
     return;
   }
   console.log(request.type);
