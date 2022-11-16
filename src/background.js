@@ -59,7 +59,7 @@ async function getOrgId(apiHost, headers) {
 }
 
 async function queryActiveUsers(apiHost, headers) {
-  return await fetch(apiHost + '/services/data/v56.0/query/?q=SELECT+Id+,LastName+,+FirstName+,+Profile.Name+,+UserRole.Name+FROM+User+WHERE+IsActive+=+TRUE+AND+Profile.UserType+=+\'Standard\'+AND+Profile.UserLicense.Name+=+\'Salesforce\'+ORDER+BY+LastName+ASC+,FirstName+ASC+LIMIT+50000', {headers: headers}).then(toJson).then(async data => {
+  return await fetch(apiHost + '/services/data/v56.0/query/?q=SELECT+Id+,+LastName+,+FirstName+,+Profile.Name+,+UserRole.Name+FROM+User+WHERE+IsActive+=+TRUE+AND+Profile.UserType+=+\'Standard\'+AND+(+Profile.UserLicense.Name+=+\'Salesforce\'+OR+Profile.UserLicense.Name+=+\'Salesforce Platform\')+ORDER+BY+LastName+ASC+,+FirstName+ASC+LIMIT+50000', {headers: headers}).then(toJson).then(async data => {
     return data.records;
   });
 }
