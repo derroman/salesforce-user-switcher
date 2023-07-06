@@ -5,10 +5,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     // Let's have a look if the logout link is visible.
     // If so, we want to avoid, that the user tries to login again as someone else.
     let response = document.querySelectorAll('[href="/secur/logout.jsp"]');
+    console.log('hello');
     if (!response || response[0] === null || response[0] === undefined) {
       sendResponse(true);
     } else {
-      sendResponse(response[0].innerHTML === '');
+      sendResponse(response[0].innerHTML === 'Log out' || response[0].innerHTML === '');
     }
   }
 });

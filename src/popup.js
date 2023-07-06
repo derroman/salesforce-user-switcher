@@ -58,11 +58,11 @@ function queryCanUserLogin(response) {
 
 function queryOrganizationId(response) {
 
-  if(!response){
+  if (!response) {
     handleLoginNotPossibleError();
     return;
   }
-  if(response==='not possible'){
+  if (response === 'not possible') {
     createErrorMessage('This is not a Salesforce Lightning Page');
     return;
   }
@@ -111,13 +111,14 @@ function handleQueryUsersResponse(response) {
 }
 
 function handleError(error) {
-  if(error){
+  debugger;
+  if (error) {
     console.error(error);
   }
   createErrorMessage('Something weird happened', 'Potential causes:<br/><ul class="slds-list_dotted"><li>This is no Salesforce org</li><li>You are not a System Administrator</li><li>You are not allowed to switch users</li></ul>');
 }
 
-function handleLoginNotPossibleError(){
+function handleLoginNotPossibleError() {
   createErrorMessage('You are already logged in as another user', 'Please log out first!');
 }
 
@@ -196,12 +197,17 @@ function createRadioButtons(values) {
     dividerSpan.className = 'slds-radio_faux';
 
     let labelSpan = document.createElement('span');
+    let url = new URL(currentUrl);
+    let domain = url.hostname;
+    let protocol = url.protocol;
     labelSpan.className = 'slds-form-element__label';
     let innerValue = value.LastName;
     if (value.FirstName) {
       innerValue += ', ' + value.FirstName;
     }
-
+    innerValue += '<a href="' + protocol + '//' + domain + '/lightning/setup/ManageUsers/page?address=/' + value.Id + '?noredirect=1&isUserEntityOverride=1" target="_blank">';
+    innerValue += '<span class="slds-icon_container slds-icon-utility-announcement" title="Open user in Setup"><svg class="slds-icon slds-icon_xx-small slds-icon-text-light" aria-hidden="true"><use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#setup"></use></svg><span class="slds-assistive-text">Open user in Setup</span></span>';
+    innerValue += '</a>';
 
     innerValue += ' (';
     if (value.Profile && value.Profile.Name) {
@@ -210,6 +216,9 @@ function createRadioButtons(values) {
 
     if (value.UserRole && value.UserRole.Name) {
       innerValue += ' | Role: ' + value.UserRole.Name;
+    }
+    if (value.LanguageLocaleKey) {
+      innerValue += ' | Language: ' + value.LanguageLocaleKey;
     }
     innerValue += ')';
     labelSpan.innerHTML = innerValue;
@@ -234,12 +243,13 @@ function filterSearchResults(queryString) {
     let lastNameResult = entry.LastName ? entry.LastName.toLowerCase().includes(queryString.toLowerCase()) : false;
     let profileNameResult = (entry.Profile && entry.Profile.Name) ? entry.Profile.Name.toLowerCase().includes(queryString.toLowerCase()) : false;
     let userRoleNameResult = (entry.UserRole && entry.UserRole.Name) ? entry.UserRole.Name.toLowerCase().includes(queryString.toLowerCase()) : false;
-    return firstNameResult || lastNameResult || profileNameResult || userRoleNameResult;
+    let languageNameResult = entry.LanguageLocaleKey ? entry.LanguageLocaleKey.toLowerCase().includes(queryString.toLowerCase()) : false;
+    return firstNameResult || lastNameResult || profileNameResult || userRoleNameResult || languageNameResult;
   });
   console.log(JSON.stringify(filteredList, null, 1));
   createRadioButtons(filteredList);
 }
 
-function hideSpinner(){
+function hideSpinner() {
   document.getElementById('loading-spinner').style.display = 'none';
 }
