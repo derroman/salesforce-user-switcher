@@ -15,6 +15,7 @@ Pretty awesome, right? 🥳
 - Search the list of users by first name, last name, profile name or user role name
 - Login as any user by a single click
 - Logout again at any time and automatically get back to the page where you came from prior login 
+- Directly open User, Profile or Role in Setup
 
 ![The extension in action](ExtensionInAction.gif)
 
@@ -22,6 +23,7 @@ Pretty awesome, right? 🥳
 
 - Login access policies must be configured for system administrators.
 - Check Setup --> Security --> "Login Access Policies" and make sure "Administrators Can Log in as Any User" is enabled
+- This extension does not work with Salesforce Profession Edition, because it does not support login access policies
 - When you logout as a user, you might have to completely re-login again. This is a setting, which can be configured in your Salesforce org as described in this help article:
   [System administrator gets logged out when they use 'Login as User'](https://help.salesforce.com/s/articleView?id=000381482&type=1)
 
