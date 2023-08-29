@@ -17,7 +17,11 @@ Pretty awesome, right? 🥳
 - Logout again at any time and automatically get back to the page where you came from prior login 
 - Directly open User, Profile or Role in Setup
 
-![The extension in action](ExtensionInAction.gif)
+## Login as another Salesforce User
+![The extension in action](ExtensionInActionUserSwitch.gif)
+
+## Open a Profile in Setup
+![The extension in action](ExtensionInActionOpenProfile.gif)
 
 ## Remarks
 
