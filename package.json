@@ -1,6 +1,6 @@
 {
   "name": "salesforce-user-switcher",
-  "version": "1.2.0.0",
+  "version": "1.2.0.1",
   "description": "Salesforce User Switcher",
   "private": true,
   "scripts": {

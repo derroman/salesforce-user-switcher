@@ -139,6 +139,7 @@ function queryUsers(response) {
 
 }
 
+
 function handleQueryUsersResponse(response) {
   if (!response) {
     handleError(null);
@@ -149,9 +150,14 @@ function handleQueryUsersResponse(response) {
   });
   searchResultList = cleanedResponse;
   filteredList = cleanedResponse;
+
   createRadioButtons(cleanedResponse);
 }
+function setCursor(){
+  const inputField = document.getElementById("text-input-id-47");
+  inputField.focus();
 
+}
 function handleError(error) {
   debugger;
   if (error) {
@@ -277,6 +283,7 @@ function createRadioButtons(values) {
   });
   // setWidthBasedOnContent();
   hideSpinner();
+  setCursor();
 }
 
 function filterSearchResults(queryString) {

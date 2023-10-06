@@ -1,14 +1,23 @@
-'use strict';
+"use strict";
 
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-  if (msg.text === 'CHECK_FOR_LOGOUT_LINK') {
+chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+  if (msg.text === "CHECK_FOR_LOGOUT_LINK") {
     // Let's have a look if the logout link is visible.
     // If so, we want to avoid, that the user tries to login again as someone else.
-    let response = document.querySelectorAll('[href="/secur/logout.jsp"]');
-    if (!response || response[0] === null || response[0] === undefined) {
+    let logoutNode = document.querySelectorAll("[href=\"/secur/logout.jsp\"]");
+
+    if (!logoutNode || logoutNode[0] === null || logoutNode[0] === undefined) {
       sendResponse(true);
     } else {
-      sendResponse(response[0].innerHTML === 'Log out' || response[0].innerHTML === '');
+      // This does only work, if the user uses English as language
+      let response = logoutNode[0].innerHTML === "Log out" || logoutNode[0].innerHTML === "";
+      if (!response) {
+        // so as a "fallback" we check for the amount of pipes in the text before the logout link
+        logoutNode = logoutNode[0].previousSibling;
+        let amountOfPipes = (logoutNode.innerHTML.match(/\|/g) || []).length;
+        response = amountOfPipes === 1;
+      }
+      sendResponse(response);
     }
   }
 });
