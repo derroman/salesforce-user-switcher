@@ -37,3 +37,4 @@ gen
 .project
 .settings
 *.zip
+package-lock.json
